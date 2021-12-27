@@ -1,0 +1,169 @@
+[
+    {
+        "id": "509e4eb4e59c1548",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "2a4fc3db7acdb24e",
+        "type": "mqtt in",
+        "z": "509e4eb4e59c1548",
+        "name": "",
+        "topic": "#",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "3bedb55abdd9047c",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 490,
+        "y": 200,
+        "wires": [
+            [
+                "a63871d0cf8ef8aa"
+            ]
+        ]
+    },
+    {
+        "id": "262aef1e24485f62",
+        "type": "debug",
+        "z": "509e4eb4e59c1548",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1170,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "534c14476b39adfe",
+        "type": "function",
+        "z": "509e4eb4e59c1548",
+        "name": "",
+        "func": "var datas= msg.payload.uplink_message.frm_payload.split(',')\nvar newmsg = {\n    \"temp\":datas[0],\n    \"humid\":datas[1],\n    'light_b':datas[2],\n    'light_r':datas[3],\n    \"number\":datas[4]\n}\nreturn newmsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 200,
+        "wires": [
+            [
+                "262aef1e24485f62",
+                "e1167a2f026eb1a9"
+            ]
+        ]
+    },
+    {
+        "id": "a63871d0cf8ef8aa",
+        "type": "base64",
+        "z": "509e4eb4e59c1548",
+        "name": "",
+        "action": "b64",
+        "property": "payload.uplink_message.frm_payload",
+        "x": 640,
+        "y": 200,
+        "wires": [
+            [
+                "534c14476b39adfe"
+            ]
+        ]
+    },
+    {
+        "id": "5bb661b526e00baf",
+        "type": "mysql",
+        "z": "509e4eb4e59c1548",
+        "mydb": "ed045ce4295b6584",
+        "name": "",
+        "x": 870,
+        "y": 300,
+        "wires": [
+            [
+                "dd401ad4a3fe0088"
+            ]
+        ]
+    },
+    {
+        "id": "e1167a2f026eb1a9",
+        "type": "function",
+        "z": "509e4eb4e59c1548",
+        "name": "",
+        "func": "var mysqlmsg = {\n    \"payload\":[msg.light_b,msg.temp,msg.number,msg.light_r,msg.humid],\n    \"topic\": \"insert into data(Light_Blue,Temp,Nb,Light_Red,Humid,day,dayname)\"+\n    \"values(?,?,?,?,?,now(),dayname(now()));\"\n}\nreturn mysqlmsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 300,
+        "wires": [
+            [
+                "5bb661b526e00baf"
+            ]
+        ]
+    },
+    {
+        "id": "dd401ad4a3fe0088",
+        "type": "debug",
+        "z": "509e4eb4e59c1548",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "3bedb55abdd9047c",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "eu1.cloud.thethings.network",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "ed045ce4295b6584",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "iot",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]
